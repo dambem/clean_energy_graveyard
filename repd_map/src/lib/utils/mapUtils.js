@@ -35,10 +35,26 @@ export async function addLocalAuthoritiesLayer(map) {
             'fill-opacity': [
                 'case',
                 ['boolean', ['feature-state', 'hover'], false],
-                1,
-                0.5
+                0.9,
+                [
+                    'interpolate', ['linear'],
+                    ['get', 'project_count'],
+                    0, 0.05,
+                    1, 0.4,
+                    5, 0.6,
+                    15, 0.8
+                ]
             ],
-            'fill-color':'#fbb03b',
+            'fill-color': [
+                'interpolate', ['linear'],
+                ['get', 'project_count'],
+                0, '#f0f0f0',
+                1, '#fdd49e',
+                3, '#fdbb84',
+                5, '#fc8d59',
+                10, '#e34a33',
+                15, '#b30000'
+            ],
         }
     });
 }

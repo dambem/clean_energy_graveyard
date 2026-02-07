@@ -118,6 +118,8 @@
     // Animation timer
     let animationTimer;
     function updateCircleColors() {
+        if (!map || !map.getLayer("unclustered-point")) return;
+        if (map.getLayer("unclustered-point").type !== "circle") return;
         if (coloringMode === "nimby") {
             // NIMBY-based coloring
             map.setPaintProperty(
@@ -187,6 +189,29 @@
         coloringMode = coloringMode === "nimby" ? "type" : "nimby";
         currentTypeLabel = coloringMode === "nimby" ? typeItems : typeItems2;
         updateCircleColors();
+    }
+
+    function enrichAuthoritiesWithProjectCounts(authoritiesData, projectFeatures) {
+        const projectCounts = {};
+        const capacityCounts = {};
+        projectFeatures.forEach((feature) => {
+            const authority =
+                feature.properties["Planning Authority"] || "Unknown";
+            projectCounts[authority] = (projectCounts[authority] || 0) + 1;
+            capacityCounts[authority] =
+                (capacityCounts[authority] || 0) +
+                (parseFloat(
+                    feature.properties["Installed Capacity (MWelec)"],
+                ) || 0);
+        });
+
+        authoritiesData.features.forEach((feature) => {
+            const name = feature.properties.LAD24NM;
+            feature.properties.project_count = projectCounts[name] || 0;
+            feature.properties.total_capacity = Math.round(
+                capacityCounts[name] || 0,
+            );
+        });
     }
     function calculateTotalCapacity(points) {
         const total = points.reduce((sum, point) => {
@@ -260,6 +285,9 @@
         });
 
         map.on("load", () => {
+            // Enrich local authorities with project counts before adding source
+            enrichAuthoritiesWithProjectCounts(config, points);
+
             // Add source
             addLocalAuthoritiesSource(map, config);
             map.addSource("points", {
@@ -278,96 +306,49 @@
             let hoveredPointId = null;
             let hoveredAuthorityId = null;
 
-            // addMarkerLayer(map);
+            // Load marker icon and add symbol layer
+            const markerImg = new Image(64, 64);
+            markerImg.onload = () => {
+                map.addImage("marker-icon", markerImg);
 
-            map.addLayer({
-                id: "unclustered-point",
-                type: "circle",
-                source: "points",
-                paint: {
-                    "circle-radius": [
-                        "interpolate",
-                        ["linear"],
-                        ["coalesce", ["get", sizeProperty], 0],
-                        0,
-                        5,
-                        200,
-                        20,
-                    ],
-                    "circle-stroke-width": 0,
-                    "circle-stroke-opacity": 0.5,
-
-                    "circle-color": [
-                        "case",
-                        ["boolean", ["feature-state", "selected"], false],
-                        "#fbb03b", // Selected color
-                        [
-                            "case",
-                            [
-                                "in",
-                                ["get", refProperty],
-                                ["literal", [...nimbyRefIds]],
-                            ],
-                            "#97001b", // Has nimby details - darker red
-                            [
-                                "case",
-                                [
-                                    "in",
-                                    ["get", refProperty],
-                                    ["literal", [...nimbyRefIds3]],
-                                ],
-                                "#FF446b", // Has nimby details - darker red
-                                [
-                                    "case",
-                                    [
-                                        "in",
-                                        ["get", refProperty],
-                                        ["literal", [...nimbyRefIds2]],
-                                    ],
-                                    "#a698b8",
-                                    "#d3d3d3", // No nimby details - gray
-                                ],
-                            ],
-                        ],
-                    ],
-                    "circle-opacity": 0,
-                },
-            });
-            setTimeout(() => {
-                map.setPaintProperty(
-                    "unclustered-point",
-                    "circle-opacity-transition",
-                    {
-                        duration: 800,
-                        delay: 100,
+                map.addLayer({
+                    id: "unclustered-point",
+                    type: "symbol",
+                    source: "points",
+                    minzoom: 7,
+                    layout: {
+                        "icon-image": "marker-icon",
+                        "icon-size": 0.3,
+                        "icon-allow-overlap": true,
+                        "icon-anchor": "bottom",
                     },
-                );
-                map.setPaintProperty(
-                    "unclustered-point",
-                    "circle-stroke-width-transition",
-                    {
-                        duration: 800,
-                        delay: 100,
+                    paint: {
+                        "icon-opacity": 0,
                     },
-                );
-                map.setPaintProperty(
-                    "unclustered-point",
-                    "circle-stroke-width",
-                    1,
-                ); // Final opacity
+                });
 
-                map.setPaintProperty(
-                    "unclustered-point",
-                    "circle-opacity",
-                    0.8,
-                ); // Final opacity
-            }, 300); // Wait 300ms after layer is added before starting animation
+                setTimeout(() => {
+                    map.setPaintProperty(
+                        "unclustered-point",
+                        "icon-opacity-transition",
+                        { duration: 800, delay: 100 },
+                    );
+                    map.setPaintProperty(
+                        "unclustered-point",
+                        "icon-opacity",
+                        1,
+                    );
+                }, 300);
+            };
+            markerImg.src = marker;
             // Add interactivity
             map.on("mousemove", (e) => {
                 // Use queryRenderedFeatures to check for features at the mouse position
                 // The first argument is the point, and the second is an object specifying the layers to query.
+                const queryLayers = ["local-authorities-layer"];
+                if (map.getLayer("unclustered-point")) queryLayers.unshift("unclustered-point");
                 const features = map.queryRenderedFeatures(e.point, {
-                    layers: ["unclustered-point", "local-authorities-layer"],
+                    layers: queryLayers,
                 });
                 // Reset cursor
                 map.getCanvas().style.cursor = "";
@@ -423,10 +404,15 @@
                                 },
                                 { hover: true },
                             );
+                            const count = authorityFeature.properties.project_count || 0;
+                            const capacity = authorityFeature.properties.total_capacity || 0;
                             popup
                                 .setLngLat(e.lngLat)
                                 .setHTML(
-                                    `<h3>${authorityFeature.properties.LAD24NM}</h3>`,
+                                    `<h3>${authorityFeature.properties.LAD24NM}</h3>` +
+                                    (count > 0
+                                        ? `<p><b>Projects:</b> ${count}</p><p><b>Total Capacity:</b> ${capacity} MW</p>`
+                                        : ``),
                                 )
                                 .addTo(map);
                         }
@@ -508,6 +494,24 @@
                             "Help us build our database by submitting information about this project!",
                     };
                 }
+            });
+
+            // Click on local authority to zoom to its bounds
+            map.on("click", "local-authorities-layer", (e) => {
+                if (!e.features.length) return;
+                const feature = e.features[0];
+                const coords = feature.geometry.coordinates;
+                const bounds = new maplibregl.LngLatBounds();
+
+                if (feature.geometry.type === "Polygon") {
+                    coords[0].forEach((coord) => bounds.extend(coord));
+                } else if (feature.geometry.type === "MultiPolygon") {
+                    coords.forEach((polygon) =>
+                        polygon[0].forEach((coord) => bounds.extend(coord)),
+                    );
+                }
+
+                map.fitBounds(bounds, { padding: 40, maxZoom: 12 });
             });
 
             // Initialize map data filter
