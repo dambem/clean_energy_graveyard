@@ -38,6 +38,12 @@
     export let maxSize = 50;
     let coloringMode = "nimby"; // Start with NIMBY coloring, options are 'nimby' or 'type'
     let showControlPanel = false;
+    let filterSolar = true;
+    let filterWind = true;
+    let filterBattery = true;
+    let filterOther = true;
+    let showLocalAuthorities = true;
+    let showProjects = true;
     // DOM elements
     const NIMBY_TEST = "#b62121";
     const NIMBY_POTENTIAL = "#eb8e47";
@@ -119,7 +125,6 @@
     let animationTimer;
     function updateCircleColors() {
         if (!map || !map.getLayer("unclustered-point")) return;
-        if (map.getLayer("unclustered-point").type !== "circle") return;
         if (coloringMode === "nimby") {
             // NIMBY-based coloring
             map.setPaintProperty(
@@ -191,6 +196,11 @@
         updateCircleColors();
     }
 
+    function toggleLayerVisibility(layerId, visible) {
+        if (!map || !map.getLayer(layerId)) return;
+        map.setLayoutProperty(layerId, "visibility", visible ? "visible" : "none");
+    }
+
     function enrichAuthoritiesWithProjectCounts(authoritiesData, projectFeatures) {
         const projectCounts = {};
         const capacityCounts = {};
@@ -255,15 +265,40 @@
         }, 500);
     }
 
+    function getActiveTypes() {
+        const types = [];
+        if (filterSolar) types.push("Solar Photovoltaics");
+        if (filterWind) types.push("Wind Onshore");
+        if (filterBattery) types.push("Battery");
+        if (filterOther) types.push("Other");
+        return types;
+    }
+
     function updateMapData() {
         if (!map) return;
+        const activeTypes = getActiveTypes();
         var filter = [
             "all",
             [">=", ["get", "Planning Application Submitted"], startDate],
             ["<=", ["get", "Planning Application Submitted"], endDate],
         ];
-        if (technologyType == "All") {
-            filter.push(["==", ["get", "Technology Type"], technologyType]);
+        if (activeTypes.length < 4) {
+            // Build a match expression: true if type is in activeTypes, also allow through types
+            // that don't match any known category when "Other" is on
+            filter.push([
+                "any",
+                ["in", ["get", "Technology Type"], ["literal", activeTypes]],
+                ...(filterOther
+                    ? [
+                          [
+                              "all",
+                              ["!=", ["get", "Technology Type"], "Solar Photovoltaics"],
+                              ["!=", ["get", "Technology Type"], "Wind Onshore"],
+                              ["!=", ["get", "Technology Type"], "Battery"],
+                          ],
+                      ]
+                    : []),
+            ]);
         }
         map.setFilter("unclustered-point", filter);
 
@@ -306,41 +341,60 @@
             let hoveredPointId = null;
             let hoveredAuthorityId = null;
 
-            // Load marker icon and add symbol layer
-            const markerImg = new Image(64, 64);
-            markerImg.onload = () => {
-                map.addImage("marker-icon", markerImg);
+            // Add circle layer for project markers
+            map.addLayer({
+                id: "unclustered-point",
+                type: "circle",
+                source: "points",
+                paint: {
+                    "circle-radius": [
+                        "interpolate",
+                        ["linear"],
+                        ["coalesce", ["get", sizeProperty], 0],
+                        0, 6,
+                        50, 14,
+                        200, 22,
+                    ],
+                    "circle-color": [
+                        "case",
+                        ["boolean", ["feature-state", "selected"], false],
+                        "#fbb03b",
+                        [
+                            "case",
+                            ["in", ["get", refProperty], ["literal", [...nimbyRefIds]]],
+                            NIMBY_TEST,
+                            [
+                                "case",
+                                ["in", ["get", refProperty], ["literal", [...nimbyRefIds3]]],
+                                NIMBY_POTENTIAL,
+                                [
+                                    "case",
+                                    ["in", ["get", refProperty], ["literal", [...nimbyRefIds2]]],
+                                    NIMBY_POTENTIAL,
+                                    "#d3d3d3",
+                                ],
+                            ],
+                        ],
+                    ],
+                    "circle-stroke-color": "#000000",
+                    "circle-stroke-width": 0.5,
+                    "circle-opacity": 0,
+                },
+            });
 
-                map.addLayer({
-                    id: "unclustered-point",
-                    type: "symbol",
-                    source: "points",
-                    minzoom: 7,
-                    layout: {
-                        "icon-image": "marker-icon",
-                        "icon-size": 0.3,
-                        "icon-allow-overlap": true,
-                        "icon-anchor": "bottom",
-                    },
-                    paint: {
-                        "icon-opacity": 0,
-                    },
-                });
-
-                setTimeout(() => {
-                    map.setPaintProperty(
-                        "unclustered-point",
-                        "icon-opacity-transition",
-                        { duration: 800, delay: 100 },
-                    );
-                    map.setPaintProperty(
-                        "unclustered-point",
-                        "icon-opacity",
-                        1,
-                    );
-                }, 300);
-            };
-            markerImg.src = marker;
+            // Fade in the circles
+            setTimeout(() => {
+                map.setPaintProperty(
+                    "unclustered-point",
+                    "circle-opacity-transition",
+                    { duration: 800, delay: 100 },
+                );
+                map.setPaintProperty(
+                    "unclustered-point",
+                    "circle-opacity",
+                    0.85,
+                );
+            }, 300);
             // Add interactivity
             map.on("mousemove", (e) => {
                 // Use queryRenderedFeatures to check for features at the mouse position
@@ -608,7 +662,7 @@
         setTimeout(animateProperties, 0);
     }
 
-    $: if (startDate || endDate || technologyType) {
+    $: if (startDate || endDate || technologyType || filterSolar || filterWind || filterBattery || filterOther) {
         updateMapData();
     }
 </script>
@@ -699,8 +753,49 @@
                 {/each}
             </div>
         </div>
-        <div></div>
-        <br />
+
+        <hr class="my-2 border-gray-300/40" />
+
+        <div class="text-xs font-semibold mb-1 opacity-70">Filter by Type</div>
+        <div class="filter-items">
+            <label class="filter-item">
+                <input type="checkbox" bind:checked={filterSolar} />
+                <span class="filter-swatch" style="background-color: #E6B800"></span>
+                Solar
+            </label>
+            <label class="filter-item">
+                <input type="checkbox" bind:checked={filterWind} />
+                <span class="filter-swatch" style="background-color: #00CC66"></span>
+                Wind
+            </label>
+            <label class="filter-item">
+                <input type="checkbox" bind:checked={filterBattery} />
+                <span class="filter-swatch" style="background-color: #004C99"></span>
+                Battery
+            </label>
+            <label class="filter-item">
+                <input type="checkbox" bind:checked={filterOther} />
+                <span class="filter-swatch" style="background-color: #FFFFFF"></span>
+                Other
+            </label>
+        </div>
+
+        <hr class="my-2 border-gray-300/40" />
+
+        <div class="text-xs font-semibold mb-1 opacity-70">Layers</div>
+        <div class="filter-items">
+            <label class="layer-toggle">
+                <input type="checkbox" bind:checked={showLocalAuthorities}
+                    on:change={() => toggleLayerVisibility("local-authorities-layer", showLocalAuthorities)} />
+
+                Local Authorities
+            </label>
+            <label class="layer-toggle">
+                <input type="checkbox" bind:checked={showProjects}
+                    on:change={() => toggleLayerVisibility("unclustered-point", showProjects)} />
+                Projects
+            </label>
+        </div>
     </div>
 </div>
 
@@ -841,6 +936,31 @@
         display: flex;
         align-items: center;
         gap: 8px;
+    }
+    .filter-items {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .filter-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        cursor: pointer;
+    }
+    .filter-item input[type="checkbox"] {
+        width: 14px;
+        height: 14px;
+        cursor: pointer;
+        accent-color: #f97316;
+    }
+    .filter-swatch {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        border: 1px solid rgba(0, 0, 0, 0.15);
     }
     .map-container {
         height: 100vh;
