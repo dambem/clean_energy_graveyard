@@ -24,10 +24,12 @@ class MessageResponse:
 class BaseClient(Protocol):
     """Base class for clients that interact with LLMS"""
     api_key: str
-    def call(self, prompt: str, **kwargs) -> MessageResponse:
+    def call(self, prompt: str, options: MessageOptions=MessageOptions(), **kwargs) -> MessageResponse:
         """Make a call to the LLM with the given prompt and return the response text."""
         ...
-
+    def call_json(self, prompt:str, json_model:BaseModel, options: MessageOptions=MessageOptions(), **kwargs) -> MessageResponse:
+        """Make a call to the LLM with given prompt and json serializable model, return as valid json."""
+        ...
 
 class AnthropicClient:
     """Client for interacting with Anthropic's Claude models."""
@@ -49,7 +51,30 @@ class AnthropicClient:
             messages=[message],
             **kwargs
         )
-        print(response)
+        message = MessageResponse(
+            text=response.content[0].text,
+            metadata=None,
+            input_tokens=response.usage.input_tokens,
+            output_tokens=response.usage.output_tokens
+        )
+        return message
+    def call_json(self, prompt:str, json_model:BaseModel, options: MessageOptions = MessageOptions(), **kwargs) -> MessageResponse:
+        message = {
+            "role": "user",
+            "content": prompt
+        }
+        response = self.client.messages.create(
+            model = self.model,
+            temperature=self.temperature,
+            max_tokens=options.max_tokens,
+            messages=[message],
+            output_config={
+                "format": {
+                    "type": "json_schema",
+                    "schema": anthropic.transform_schema(json_model)
+                }
+            }
+        )
         message = MessageResponse(
             text=response.content[0].text,
             metadata=None,

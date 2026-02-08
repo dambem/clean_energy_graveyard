@@ -16,6 +16,7 @@ dependencies = [
     "pydantic-settings>=2.5",
     "anthropic>=0.79.0",
     "pytest>=9.0.2",
+    "geopandas>=1.1.2",
 ]
 
 [project.optional-dependencies]

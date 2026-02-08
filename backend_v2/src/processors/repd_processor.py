@@ -1,97 +1,66 @@
-from pathlib import Path
+from enum import Enum
 import pandas as pd
-from .base import BaseProcessor
-
-REFUSED_STATUSES = [
-    "Application Refused",
-    "Abandoned",
-    "Application Withdrawn",
-    "Appeal Refused",
-]
-
-IN_PROGRESS_STATUSES = [
-    "Application Submitted",
-    "Revised",
-    "Awaiting Construction",
-    "No Application Required",
-    "Under Construction",
-]
+import geopandas as gpd
+from pyproj import Transformer
+from dataclasses import dataclass
+from enum import Enum
 
 
-class RepdProcessor(BaseProcessor):
-    """Processor for UK Renewable Energy Planning Database CSV exports."""
+DEVELOPMENT_TYPES = {'Appeal Refused', 
+                     'Appeal Withdrawn', 
+                     'Planning Permission Expired',
+                     'Revised',
+                     'Application Withdrawn', 
+                     'Decommissioned', 
+                     'Appeal Lodged', 
+                     'Under Construction', 
+                     'Awaiting Construction', 
+                     'Abandoned', 
+                     'Application Refused', 
+                     'Operational', 
+                     'Application Submitted', 
+                     'No Application Required'}
 
-    DATE_COLUMNS = [
-        "Planning Application Submitted",
-        "Planning Permission Refused",
-        "Planning Application Withdrawn",
-        "Appeal Refused",
-        "Record Last Updated (dd/mm/yyyy)",
-    ]
+CANCELLED_DEVELOPMENT_TYPES = {
+                    'Appeal Refused',
+                    'Appeal Withdrawn',
+                    'Planning Permission Expired',
+                    'Application Withdrawn', 
+                    'Abandoned', 
+                    'Application Refused', 
+}
 
-    def __init__(self, file_path: Path, encoding: str = "cp1252"):
-        super().__init__(file_path, encoding)
+class REPDProcessor:
+    """
+    REPDProcessor. Creates dataframe based on a REPD CSV
 
-    def clean(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Parse dates, normalise capacity, fill NaN."""
-        df = df.copy()
-        for col in self.DATE_COLUMNS:
-            if col in df.columns:
-                df[col] = pd.to_datetime(df[col], format="%d/%m/%Y", errors="coerce")
-        df["Installed Capacity (MWelec)"] = (
-            pd.to_numeric(df["Installed Capacity (MWelec)"], errors="coerce").fillna(0)
-        )
-        return df
+    """
+    def __init__(self, src:str='src/data/REPD_Publication_Q3_2025.csv', encoding:str='cp1252'):
+        self.src = src
+        self.encoding = encoding
 
-    def get_refused(self, df: pd.DataFrame | None = None) -> pd.DataFrame:
-        """Filter to refused/withdrawn/abandoned applications only."""
-        df = df if df is not None else self.df
-        return self.filter_by_column(df, "Development Status (short)", REFUSED_STATUSES)
+    def coordinates_to_lat_lon(self, df=pd.DataFrame) -> pd.DataFrame:
+        pass
+    
+    def pre_process(self, df:pd.DataFrame) -> pd.DataFrame:
+        """Perform necessary pre-processing and data cleaning."""
+        pass
 
-    def get_in_progress(self, df: pd.DataFrame | None = None) -> pd.DataFrame:
-        """Filter to applications still in progress."""
-        df = df if df is not None else self.df
-        return self.filter_by_column(df, "Development Status (short)", IN_PROGRESS_STATUSES)
+    def load(self) -> pd.DataFrame:
+        """Load dataframe."""
+        return pd.read_csv(self.src, encoding=self.encoding)
+    
+    def filter_by_cancelled(self, df:pd.DataFrame) -> pd.DataFrame:
+        return df[df['Development Status (short)'].isin(CANCELLED_DEVELOPMENT_TYPES)]
+    
+    def get_unique(self, column:str, df:pd.DataFrame) -> set:
+        """Get unique values from pandas dataframe column.
 
-    def filter_by_county(self, df: pd.DataFrame, county: str) -> pd.DataFrame:
-        return self.filter_by_column(df, "County", [county])
+        Args:
+            column (str): Column name
+            df (pd.DataFrame | None): Dataframe to use by loaded processor.
 
-    def filter_by_authority(self, df: pd.DataFrame, authorities: list[str]) -> pd.DataFrame:
-        return self.filter_by_column(df, "Planning Authority", authorities)
-
-    def calculate_processing_stats(self, df: pd.DataFrame) -> list[dict]:
-        """Calculate average delay and time distribution grouped by year."""
-        df = df.copy()
-        submitted = "Planning Application Submitted"
-        refused = "Planning Permission Refused"
-
-        mask = df[submitted].notna() & df[refused].notna()
-        df = df[mask]
-        df["days_to_decision"] = (df[refused] - df[submitted]).dt.days
-        df["year"] = df[submitted].dt.year
-
-        buckets = [
-            (0, 90), (90, 180), (180, 270), (270, 360),
-            (360, 450), (450, 540), (540, 630), (630, 720),
-            (720, 810), (810, 900),
-        ]
-
-        stats = []
-        for year, group in df.groupby("year"):
-            days = group["days_to_decision"]
-            distribution = []
-            for lo, hi in buckets:
-                distribution.append({
-                    "range": f"{lo}-{hi} days",
-                    "count": int(((days >= lo) & (days < hi)).sum()),
-                })
-            distribution.append({
-                "range": "Over 900 days",
-                "count": int((days >= 900).sum()),
-            })
-            stats.append({
-                "year": int(year),
-                "avgDelay": round(days.mean(), 1),
-                "distribution": distribution,
-            })
-        return stats
+        Returns:
+            set: Set of unique values for the current dataframe
+        """
+        return set(df[column].unique())
