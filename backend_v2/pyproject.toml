@@ -15,6 +15,7 @@ dependencies = [
     "pydantic>=2.9",
     "pydantic-settings>=2.5",
     "anthropic>=0.79.0",
+    "pytest>=9.0.2",
 ]
 
 [project.optional-dependencies]
