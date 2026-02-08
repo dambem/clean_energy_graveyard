@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 from src.clients import AnthropicClient, BaseClient, MessageOptions
 from src.processors.repd_processor import REPDProcessor
-from src.prompts import prompt_nimby_analysis, prompt_evaluator
+from src.prompts import prompt_nimby_analysis, prompt_evaluator, prompt_reseacher
 from pydantic import BaseModel
 import pandas as pd 
 load_dotenv()
@@ -20,10 +20,12 @@ class NimbyFormat(BaseModel):
     certainty: int
     certainty_meta: str
     interesting_information: list[str]
+    organised_nimby: list[str]
 
 class Evaluation(BaseModel):
     certainty: float
     accuracy: float
+
 
 @dataclass 
 class AppConfig:
@@ -32,7 +34,24 @@ class AppConfig:
 class NimbyAgent:
     def __init__(self, client: BaseClient, processor = REPDProcessor):
         self.client = client
+        self.search_client = client
         self.repd_processor = processor
+    
+    def run_search(self, context, prompt_func=prompt_reseacher):
+        prompt_val = prompt_func(context=context)
+        print(prompt_val)
+        message = self.client.call(prompt_val, tools='web')
+        print(message)
+        while message.text.stop_reason == "tool_use":
+            print('Calling Tool')
+            tool_use_blocks = [block for block in message.text.content if block.type == "tool_use"]
+            print(tool_use_blocks)
+            message = self.client.call(
+                prompt_val,  # Or build on the conversation
+                tools='web'
+            )
+        text_blocks = [block.text for block in message.text.content if hasattr(block, 'text')]
+        print(text_blocks)
     def get_processor(self):
         return self.repd_processor
 
@@ -47,7 +66,7 @@ class NimbyAgent:
             MessageResponse: Message response
         """
         prompt = prompt_func(context=context)
-        message = self.client.call_json(prompt, json_model=NimbyFormat)
+        message = self.client.call_json(prompt, json_model=NimbyFormat).text.content[0].text
         nimby = NimbyFormat.model_validate_json(message.text)
         return nimby 
 
@@ -70,36 +89,11 @@ class NimbyAgent:
             if current >= max_values:
                 break
             prompt = prompt_func(context=row.to_dict())
-            message = self.client.call_json(prompt, json_model=NimbyFormat)
+            message = self.client.call_json(prompt, json_model=NimbyFormat).text.content[0].text
             nimby = NimbyFormat.model_validate_json(message.text)
             messages.append((row, nimby))
             current += 1
         return messages
-    
-    async def run_async(self, max_values:int = 2, prompt_func=prompt_nimby_analysis):
-        """Runs across current list of context values
-
-        Args:
-            max_values [int]: max values to iterate across on.
-            prompt [func]: function containing a prompt to run, defaults to nimby analysis prompt
-
-        Returns:
-            list[tuple[pd.Series, NimbyFormat]]: Returns a list of values containing context and output
-        """
-        df = self.repd_processor.load()
-        context = self.repd_processor.filter_by_cancelled(df)
-        current = 0
-        messages = []
-
-        for _, row in context.iterrows():
-            if current >= max_values:
-                break
-            prompt = prompt_func(context=row.to_dict())
-            message = self.client.call_json(prompt, json_model=NimbyFormat)
-            nimby = NimbyFormat.model_validate_json(message.text)
-            messages.append((row, nimby))
-            current += 1
-        yield messages
     
     def eval(self, results: list[tuple[pd.Series, NimbyFormat]]) -> Evaluation:
         """Evaluate for certainty and accuracy.
@@ -154,6 +148,16 @@ def main():
     evals = agent.eval(messages)
     log_eval(evals.model_dump())
     return messages
+
+def message_test():
+    cfg = AppConfig()
+    client = AnthropicClient(api_key=cfg.api_key, temperature= 0.9)
+    processor = REPDProcessor()
+
+    data = processor.process_pipeline()
+
+    agent = NimbyAgent(client=client, processor=processor)
+
 
 if __name__ == "__main__":
     main()

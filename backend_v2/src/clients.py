@@ -30,6 +30,7 @@ class BaseClient(Protocol):
     def call_json(self, prompt:str, json_model:BaseModel, options: MessageOptions=MessageOptions(), **kwargs) -> MessageResponse:
         """Make a call to the LLM with given prompt and json serializable model, return as valid json."""
         ...
+    
     async def call_json_async(self, prompt:str, json_model:BaseModel, options: MessageOptions=MessageOptions(), **kwargs) -> MessageResponse:
         """Make a call to the LLM with given prompt and json serializable model, return as valid json."""
         ...
@@ -50,25 +51,44 @@ class AnthropicClient:
             "role": "user",
             "content": prompt
         }
+        tools = []
+        if kwargs.get('tools'):
+            tools = [{
+                "type": "web_search_20250305",
+                "name": "web_search",
+                "max_uses": 5
+            }]
+
         response = self.client.messages.create(
             model=self.model,
             temperature=self.temperature,
             max_tokens=options.max_tokens,
             messages=[message],
-            **kwargs
+            tools=tools,
         )
+
+
         message = MessageResponse(
-            text=response.content[0].text,
-            metadata=None,
+            text=response,
             input_tokens=response.usage.input_tokens,
             output_tokens=response.usage.output_tokens
         )
+
         return message
     def call_json(self, prompt:str, json_model:BaseModel, options: MessageOptions = MessageOptions(), **kwargs) -> MessageResponse:
         message = {
             "role": "user",
             "content": prompt
         }
+        web_tools = {}
+        if kwargs.get('tools'):
+            web_tools = {
+                "type": "web_search_20250305",
+                "name": "web_search",
+                "max_uses": 5
+            }
+            
+
         response = self.client.messages.create(
             model = self.model,
             temperature=self.temperature,
@@ -79,7 +99,8 @@ class AnthropicClient:
                     "type": "json_schema",
                     "schema": anthropic.transform_schema(json_model)
                 }
-            }
+            },
+            tools=[web_tools]
         )
         message = MessageResponse(
             text=response.content[0].text,

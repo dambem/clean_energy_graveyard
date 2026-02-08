@@ -133,7 +133,6 @@ class REPDProcessor:
         df["lat"] = lat.round(4)
         df["lon"] = lon.round(4)
         df.drop(columns=[easting_col, northing_col])
-        df[df.geometry.notna()]
         return df
 
     def load(self) -> pd.DataFrame:
@@ -216,7 +215,28 @@ class REPDProcessor:
         df = gpd.GeoDataFrame(
             df, geometry=gpd.points_from_xy(col_lon, col_lat), crs="EPSG:4326"
         )
+        df[df.geometry.notna()]
+
         return df
+    
+    def create_geojson(self, df:pd.DataFrame):
+        features = []
+        for _, row in df.iterrows():
+            feature = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [float(row['lon']), float(row['lat'])]
+                },
+                "properties": row.drop(['latitude', 'longitude']).to_dict()
+            }
+            features.append(feature)
+        return {
+            "type": "FeatureCollection",
+            "features": features
+        }
+    def get_google_query_string(self, row: pd.Series) -> str:
+        return f"{row['Site Name'], {row['Country']}, {row['Technology Type']}}, around {row['Record Last Updated (dd/mm/yyyy)']} "
 
     def process_pipeline(self, 
                          date:datetime | None = None,

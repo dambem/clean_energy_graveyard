@@ -78,3 +78,18 @@ def prompt_evaluator(context, response) -> str:
 
 
     """
+
+def prompt_reseacher(context) -> str:
+    return f"""
+    <ROLE>
+    You are an investigator, based on the context provided, your job is to find an article via websearch that most likely relates to the topic.
+    If multiple are found, 
+    </ROLE>
+    <INSTRUCTION>
+    Use the web search tool provided to you to research this.
+    </INSTRUCTION>
+    <CONTEXT>
+    {context}
+    </CONTEXT>
+
+    """
