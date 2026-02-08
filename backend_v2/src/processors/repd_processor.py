@@ -41,23 +41,43 @@ class REPDProcessor:
         self.encoding = encoding
 
     def coordinates_to_lat_lon(self, 
-                               df=pd.DataFrame, 
+                               df:pd.DataFrame, 
                                easting_col:str='easting', 
                                northing_col:str='northing',
                                from_crs:str='EPSG:27700',
                                to_crs:str='EPSG:4326'
                                ) -> pd.DataFrame:
+        """Convert coordinates from latlon
+
+        Args:
+            df (pd.DataFrame): Dataframe containing coordinates
+            easting_col (str, optional): easting column in csv. Defaults to 'easting'.
+            northing_col (str, optional): northing col in csv. Defaults to 'northing'.
+            from_crs (_type_, optional): EPSG from. Defaults to 'EPSG:27700'.
+            to_crs (_type_, optional): EPSG to. Defaults to 'EPSG:4326'.
+
+        Returns:
+            pd.DataFrame: Parsed dataframe.
+        """
         transformer = Transformer.from_crs(from_crs, to_crs)
         lat, lon = transformer.transform(df[easting_col].values, df[northing_col].values)
         df['lat'] = lat
         df['lon'] = lon
-        pass
+        return df
 
     def load(self) -> pd.DataFrame:
         """Load dataframe."""
         return pd.read_csv(self.src, encoding=self.encoding)
     
     def filter_by_cancelled(self, df:pd.DataFrame) -> pd.DataFrame:
+        """Filter only by cancelled development projects
+
+        Args:
+            df (pd.DataFrame): Dataframe from load
+
+        Returns:
+            pd.DataFrame: Filtered dataframe
+        """
         return df[df['Development Status (short)'].isin(CANCELLED_DEVELOPMENT_TYPES)]
     
     def get_unique(self, column:str, df:pd.DataFrame) -> set:
@@ -71,3 +91,6 @@ class REPDProcessor:
             set: Set of unique values for the current dataframe
         """
         return set(df[column].unique())
+    
+    def process_pipeline(self) -> pd.DataFrame:
+        
