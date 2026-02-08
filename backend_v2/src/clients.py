@@ -30,14 +30,20 @@ class BaseClient(Protocol):
     def call_json(self, prompt:str, json_model:BaseModel, options: MessageOptions=MessageOptions(), **kwargs) -> MessageResponse:
         """Make a call to the LLM with given prompt and json serializable model, return as valid json."""
         ...
+    async def call_json_async(self, prompt:str, json_model:BaseModel, options: MessageOptions=MessageOptions(), **kwargs) -> MessageResponse:
+        """Make a call to the LLM with given prompt and json serializable model, return as valid json."""
+        ...
 
 class AnthropicClient:
     """Client for interacting with Anthropic's Claude models."""
-    def __init__(self, api_key: str, model: str = "claude-sonnet-4-5", temperature: float = 1.0):
+    def __init__(self, api_key: str, 
+                 model: str = "claude-sonnet-4-5", 
+                 temperature: float = 1.0):
         self.api_key = api_key
         self.model = model
         self.temperature = temperature
         self.client = anthropic.Client(api_key=api_key)
+        self.async_client = anthropic.AsyncClient(api_key=api_key)
 
     def call(self, prompt: str, options: MessageOptions = MessageOptions(), **kwargs) -> MessageResponse:
         message = {
@@ -64,6 +70,31 @@ class AnthropicClient:
             "content": prompt
         }
         response = self.client.messages.create(
+            model = self.model,
+            temperature=self.temperature,
+            max_tokens=options.max_tokens,
+            messages=[message],
+            output_config={
+                "format": {
+                    "type": "json_schema",
+                    "schema": anthropic.transform_schema(json_model)
+                }
+            }
+        )
+        message = MessageResponse(
+            text=response.content[0].text,
+            metadata=None,
+            input_tokens=response.usage.input_tokens,
+            output_tokens=response.usage.output_tokens
+        )
+        return message
+    
+    def call_json_async(self, prompt:str, json_model:BaseModel, options: MessageOptions = MessageOptions(), **kwargs) -> MessageResponse:
+        message = {
+            "role": "user",
+            "content": prompt
+        }
+        response = self.async_client.messages.create(
             model = self.model,
             temperature=self.temperature,
             max_tokens=options.max_tokens,

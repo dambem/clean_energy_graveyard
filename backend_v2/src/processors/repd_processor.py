@@ -37,13 +37,20 @@ class REPDProcessor:
     """
     def __init__(self, src:str='src/data/REPD_Publication_Q3_2025.csv', encoding:str='cp1252'):
         self.src = src
+        self._df: pd.DataFrame | None = None
         self.encoding = encoding
 
-    def coordinates_to_lat_lon(self, df=pd.DataFrame) -> pd.DataFrame:
-        pass
-    
-    def pre_process(self, df:pd.DataFrame) -> pd.DataFrame:
-        """Perform necessary pre-processing and data cleaning."""
+    def coordinates_to_lat_lon(self, 
+                               df=pd.DataFrame, 
+                               easting_col:str='easting', 
+                               northing_col:str='northing',
+                               from_crs:str='EPSG:27700',
+                               to_crs:str='EPSG:4326'
+                               ) -> pd.DataFrame:
+        transformer = Transformer.from_crs(from_crs, to_crs)
+        lat, lon = transformer.transform(df[easting_col].values, df[northing_col].values)
+        df['lat'] = lat
+        df['lon'] = lon
         pass
 
     def load(self) -> pd.DataFrame:

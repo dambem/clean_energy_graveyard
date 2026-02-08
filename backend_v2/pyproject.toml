@@ -17,6 +17,8 @@ dependencies = [
     "anthropic>=0.79.0",
     "pytest>=9.0.2",
     "geopandas>=1.1.2",
+    "matplotlib>=3.10.8",
+    "asyncio>=4.0.0",
 ]
 
 [project.optional-dependencies]
