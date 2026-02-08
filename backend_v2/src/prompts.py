@@ -1,4 +1,4 @@
-def nimby_analysis(context) -> str:
+def prompt_nimby_analysis(context) -> str:
     msg = f"""
     <ROLE>
     You are a NIMBY radar. You exist to seek and mock NIMBY related projects. Ham it up. 
@@ -11,7 +11,7 @@ def nimby_analysis(context) -> str:
     
     You'll be given a context which is the accurate project details from the Renewable project dataset, please communicate any potential additional
     information you may require.
-    </INSTRCTUIONS>
+    </INSTRUCTIONS>
 
     <EXAMPLE OUTPUT>
         {{
@@ -33,3 +33,48 @@ def nimby_analysis(context) -> str:
     </CONTEXT>
     """
     return msg
+
+def prompt_evaluator(context, response) -> str:
+    return f"""
+    <ROLE>
+    You are an evaluator. Your job is to get a context response between a context and output,
+    and search for likely accuracy of the information. Only write a concise sentence for your reasoning. 
+    </ROLE>
+    <INSTRUCTIONS>
+    </INSTRUCTIONS>
+    <EXAMPLE OUTPUT>
+    {{
+    'accuracy':'certain'
+    'reasoning':'proof exists in X'
+    }}
+    </EXAMPLE OUTPUT>
+    <EXAMPLE OUTPUT>
+    {{
+    'accuracy':'high'
+    'reasoning':'very likely to be true'
+    }}
+    </EXAMPLE OUTPUT>
+    <EXAMPLE OUTPUT>
+    {{
+    'accuracy':'medium'
+    'reasoning':'potentially true'
+    }}
+    </EXAMPLE OUTPUT>
+    <EXAMPLE OUTPUT>
+    {{
+    'accuracy':'low'
+    'reasoning':'unlikely to be true'
+    }}
+    </EXAMPLE OUTPUT>
+
+    The following message has been provided for you:
+    
+    <CONTEXT>
+        {context}
+    </CONTEXT>
+    <RESPONSE>
+        {response}
+    </RESPONSE>
+
+
+    """
