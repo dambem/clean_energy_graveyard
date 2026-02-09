@@ -26,6 +26,11 @@ class Evaluation(BaseModel):
     certainty: float
     accuracy: float
 
+class WebResponse(BaseModel):
+    summary:str
+    potential_sources:list[str] | None
+    likelihood:str
+    perpetrators:str
 
 @dataclass 
 class AppConfig:
@@ -39,19 +44,18 @@ class NimbyAgent:
     
     def run_search(self, context, prompt_func=prompt_reseacher):
         prompt_val = prompt_func(context=context)
-        print(prompt_val)
-        message = self.client.call(prompt_val, tools='web')
-        print(message)
+        message = self.client.call_json(prompt_val, json_model=WebResponse, tools='web')
         while message.text.stop_reason == "tool_use":
-            print('Calling Tool')
             tool_use_blocks = [block for block in message.text.content if block.type == "tool_use"]
-            print(tool_use_blocks)
-            message = self.client.call(
-                prompt_val,  # Or build on the conversation
+            message = self.client.call_json(
+                prompt_val + tool_use_blocks,  # Or build on the conversation
+                json_model=WebResponse,
                 tools='web'
             )
         text_blocks = [block.text for block in message.text.content if hasattr(block, 'text')]
-        print(text_blocks)
+        return text_blocks
+    
+    
     def get_processor(self):
         return self.repd_processor
 

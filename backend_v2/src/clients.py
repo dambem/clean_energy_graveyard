@@ -103,8 +103,7 @@ class AnthropicClient:
             tools=[web_tools]
         )
         message = MessageResponse(
-            text=response.content[0].text,
-            metadata=None,
+            text=response,
             input_tokens=response.usage.input_tokens,
             output_tokens=response.usage.output_tokens
         )

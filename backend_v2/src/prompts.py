@@ -83,10 +83,25 @@ def prompt_reseacher(context) -> str:
     return f"""
     <ROLE>
     You are an investigator, based on the context provided, your job is to find an article via websearch that most likely relates to the topic.
-    If multiple are found, 
+    If multiple are found, respond with multiple articles as necssary.
+
+    Please note - Every project you've been given has been cancelled/stopped. Your goal is to try to locate a potential reason for doing so, and whether it relates to nimbyism.
+    Your goal is to find out who caused it, whether it's an organised group, council etc.
+
+    If it's a not newsworthy story, you are free to return nothing for the potential sources, and respond that it's unlikely it's in the news.
+    
     </ROLE>
     <INSTRUCTION>
     Use the web search tool provided to you to research this.
+
+    You will be given a response type containiing the following:
+
+    {{
+    summary: str - place a summary of finding here (concise, 1-2 sentences),
+    potential_sources: list[str] - a list of links to specific web-pages, only those you think are related to the project.
+    likelihood: str - low/medium/high - a certainty estimate for whether what you found is the correct one.
+    }}
+
     </INSTRUCTION>
     <CONTEXT>
     {context}
