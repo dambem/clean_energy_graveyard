@@ -52,6 +52,7 @@ repd_map/
 
 ```mermaid
 flowchart TD
+<<<<<<< HEAD
     REPD[(REPD Dataset\nGround Truth)] -->|Load & filter\ncancelled projects| Processor[REPDProcessor]
     Processor -->|Project context| Agent[NimbyAgent]
 
@@ -66,6 +67,22 @@ flowchart TD
     Eval -->|Accuracy & certainty scores| Output[/nimby_score.json\npoints.geojson/]
     Output -->|Static assets| Frontend[SvelteKit Frontend]
 
+=======
+    REPD[(REPD Dataset)] -->|Load & filter cancelled projects| Processor[REPDProcessor]
+    Processor -->|Project context| Agent[NimbyAgent]
+
+    Agent --> Analyse[Stage 1: NIMBY Analysis · prompt_nimby_analysis]
+    Agent --> Search[Stage 2: Article Search Web Search · prompt_researcher]
+    Agent --> Council[Stage 3: Council Website Finder 🚧]
+
+    Analyse -->|NimbyFormat JSON| Eval[Evaluator · prompt_evaluator]
+    Search -->|WebResponse JSON article URLs + summary| Eval
+    Council -.->|Planning portal URLs| Eval
+
+    Eval -->|Accuracy & certainty scores| Output[nimby_scores.json]
+    Output -->|Static assets| Frontend[SvelteKit Frontend]
+    Frontend --> Vercel
+>>>>>>> df420d7b (feat: adding latest)
     style REPD fill:#2d6a4f,color:#fff
     style Analyse fill:#eb8e47,color:#fff
     style Search fill:#eb8e47,color:#fff
