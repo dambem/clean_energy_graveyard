@@ -1,0 +1,552 @@
+[
+  {
+    "year": 2015,
+    "avgDelay": 385.4,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 3
+      },
+      {
+        "range": "90-180 days",
+        "count": 56
+      },
+      {
+        "range": "180-270 days",
+        "count": 20
+      },
+      {
+        "range": "270-360 days",
+        "count": 15
+      },
+      {
+        "range": "360-450 days",
+        "count": 22
+      },
+      {
+        "range": "450-540 days",
+        "count": 20
+      },
+      {
+        "range": "540-630 days",
+        "count": 10
+      },
+      {
+        "range": "630-720 days",
+        "count": 8
+      },
+      {
+        "range": "720-810 days",
+        "count": 6
+      },
+      {
+        "range": "810-900 days",
+        "count": 2
+      },
+      {
+        "range": "Over 900 days",
+        "count": 19
+      }
+    ]
+  },
+  {
+    "year": 2016,
+    "avgDelay": 483.1,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 0
+      },
+      {
+        "range": "90-180 days",
+        "count": 4
+      },
+      {
+        "range": "180-270 days",
+        "count": 3
+      },
+      {
+        "range": "270-360 days",
+        "count": 4
+      },
+      {
+        "range": "360-450 days",
+        "count": 5
+      },
+      {
+        "range": "450-540 days",
+        "count": 1
+      },
+      {
+        "range": "540-630 days",
+        "count": 2
+      },
+      {
+        "range": "630-720 days",
+        "count": 0
+      },
+      {
+        "range": "720-810 days",
+        "count": 0
+      },
+      {
+        "range": "810-900 days",
+        "count": 0
+      },
+      {
+        "range": "Over 900 days",
+        "count": 5
+      }
+    ]
+  },
+  {
+    "year": 2017,
+    "avgDelay": 455.8,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 0
+      },
+      {
+        "range": "90-180 days",
+        "count": 1
+      },
+      {
+        "range": "180-270 days",
+        "count": 5
+      },
+      {
+        "range": "270-360 days",
+        "count": 4
+      },
+      {
+        "range": "360-450 days",
+        "count": 2
+      },
+      {
+        "range": "450-540 days",
+        "count": 2
+      },
+      {
+        "range": "540-630 days",
+        "count": 1
+      },
+      {
+        "range": "630-720 days",
+        "count": 1
+      },
+      {
+        "range": "720-810 days",
+        "count": 3
+      },
+      {
+        "range": "810-900 days",
+        "count": 3
+      },
+      {
+        "range": "Over 900 days",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "year": 2018,
+    "avgDelay": 329.2,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 0
+      },
+      {
+        "range": "90-180 days",
+        "count": 6
+      },
+      {
+        "range": "180-270 days",
+        "count": 2
+      },
+      {
+        "range": "270-360 days",
+        "count": 5
+      },
+      {
+        "range": "360-450 days",
+        "count": 1
+      },
+      {
+        "range": "450-540 days",
+        "count": 2
+      },
+      {
+        "range": "540-630 days",
+        "count": 0
+      },
+      {
+        "range": "630-720 days",
+        "count": 1
+      },
+      {
+        "range": "720-810 days",
+        "count": 0
+      },
+      {
+        "range": "810-900 days",
+        "count": 1
+      },
+      {
+        "range": "Over 900 days",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "year": 2019,
+    "avgDelay": 507.1,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 0
+      },
+      {
+        "range": "90-180 days",
+        "count": 4
+      },
+      {
+        "range": "180-270 days",
+        "count": 9
+      },
+      {
+        "range": "270-360 days",
+        "count": 4
+      },
+      {
+        "range": "360-450 days",
+        "count": 2
+      },
+      {
+        "range": "450-540 days",
+        "count": 4
+      },
+      {
+        "range": "540-630 days",
+        "count": 0
+      },
+      {
+        "range": "630-720 days",
+        "count": 1
+      },
+      {
+        "range": "720-810 days",
+        "count": 0
+      },
+      {
+        "range": "810-900 days",
+        "count": 1
+      },
+      {
+        "range": "Over 900 days",
+        "count": 8
+      }
+    ]
+  },
+  {
+    "year": 2020,
+    "avgDelay": 525.4,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 0
+      },
+      {
+        "range": "90-180 days",
+        "count": 1
+      },
+      {
+        "range": "180-270 days",
+        "count": 2
+      },
+      {
+        "range": "270-360 days",
+        "count": 3
+      },
+      {
+        "range": "360-450 days",
+        "count": 1
+      },
+      {
+        "range": "450-540 days",
+        "count": 4
+      },
+      {
+        "range": "540-630 days",
+        "count": 2
+      },
+      {
+        "range": "630-720 days",
+        "count": 0
+      },
+      {
+        "range": "720-810 days",
+        "count": 0
+      },
+      {
+        "range": "810-900 days",
+        "count": 0
+      },
+      {
+        "range": "Over 900 days",
+        "count": 3
+      }
+    ]
+  },
+  {
+    "year": 2021,
+    "avgDelay": 308.8,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 2
+      },
+      {
+        "range": "90-180 days",
+        "count": 8
+      },
+      {
+        "range": "180-270 days",
+        "count": 8
+      },
+      {
+        "range": "270-360 days",
+        "count": 2
+      },
+      {
+        "range": "360-450 days",
+        "count": 3
+      },
+      {
+        "range": "450-540 days",
+        "count": 11
+      },
+      {
+        "range": "540-630 days",
+        "count": 1
+      },
+      {
+        "range": "630-720 days",
+        "count": 3
+      },
+      {
+        "range": "720-810 days",
+        "count": 2
+      },
+      {
+        "range": "810-900 days",
+        "count": 1
+      },
+      {
+        "range": "Over 900 days",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "year": 2022,
+    "avgDelay": 322.6,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 5
+      },
+      {
+        "range": "90-180 days",
+        "count": 19
+      },
+      {
+        "range": "180-270 days",
+        "count": 7
+      },
+      {
+        "range": "270-360 days",
+        "count": 5
+      },
+      {
+        "range": "360-450 days",
+        "count": 4
+      },
+      {
+        "range": "450-540 days",
+        "count": 5
+      },
+      {
+        "range": "540-630 days",
+        "count": 12
+      },
+      {
+        "range": "630-720 days",
+        "count": 1
+      },
+      {
+        "range": "720-810 days",
+        "count": 6
+      },
+      {
+        "range": "810-900 days",
+        "count": 1
+      },
+      {
+        "range": "Over 900 days",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "year": 2023,
+    "avgDelay": 263.0,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 3
+      },
+      {
+        "range": "90-180 days",
+        "count": 21
+      },
+      {
+        "range": "180-270 days",
+        "count": 19
+      },
+      {
+        "range": "270-360 days",
+        "count": 14
+      },
+      {
+        "range": "360-450 days",
+        "count": 22
+      },
+      {
+        "range": "450-540 days",
+        "count": 15
+      },
+      {
+        "range": "540-630 days",
+        "count": 7
+      },
+      {
+        "range": "630-720 days",
+        "count": 3
+      },
+      {
+        "range": "720-810 days",
+        "count": 0
+      },
+      {
+        "range": "810-900 days",
+        "count": 0
+      },
+      {
+        "range": "Over 900 days",
+        "count": 0
+      }
+    ]
+  },
+  {
+    "year": 2024,
+    "avgDelay": 94.5,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 8
+      },
+      {
+        "range": "90-180 days",
+        "count": 30
+      },
+      {
+        "range": "180-270 days",
+        "count": 9
+      },
+      {
+        "range": "270-360 days",
+        "count": 3
+      },
+      {
+        "range": "360-450 days",
+        "count": 1
+      },
+      {
+        "range": "450-540 days",
+        "count": 0
+      },
+      {
+        "range": "540-630 days",
+        "count": 0
+      },
+      {
+        "range": "630-720 days",
+        "count": 0
+      },
+      {
+        "range": "720-810 days",
+        "count": 0
+      },
+      {
+        "range": "810-900 days",
+        "count": 0
+      },
+      {
+        "range": "Over 900 days",
+        "count": 0
+      }
+    ]
+  },
+  {
+    "year": 2025,
+    "avgDelay": 28.6,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 1
+      },
+      {
+        "range": "90-180 days",
+        "count": 0
+      },
+      {
+        "range": "180-270 days",
+        "count": 0
+      },
+      {
+        "range": "270-360 days",
+        "count": 0
+      },
+      {
+        "range": "360-450 days",
+        "count": 0
+      },
+      {
+        "range": "450-540 days",
+        "count": 0
+      },
+      {
+        "range": "540-630 days",
+        "count": 0
+      },
+      {
+        "range": "630-720 days",
+        "count": 0
+      },
+      {
+        "range": "720-810 days",
+        "count": 0
+      },
+      {
+        "range": "810-900 days",
+        "count": 0
+      },
+      {
+        "range": "Over 900 days",
+        "count": 0
+      }
+    ]
+  }
+]

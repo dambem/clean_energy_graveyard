@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" id="ditheringCanvas">
+    <defs>
+        <linearGradient id="brightGradient1" gradientTransform="rotate(80)">
+            <stop offset="0%" stop-color="#111111" stop-opacity="1" />
+            <stop offset="100%" stop-color="#111111" stop-opacity="0.4"/>
+        </linearGradient>
+        
+        <!-- Dynamic filter that can be modified with sliders -->
+        <filter id="customDither" x="0%" y="0%" width="100%" height="100%">
+            <feTurbulence id="noiseTurbulence" 
+                            type="fractalNoise" 
+                            baseFrequency="0.4" 
+                            numOctaves="5" 
+                            seed="5" 
+                            result="noise" />
+            
+            <feComponentTransfer id="thresholdEffect" in="noise" result="thresholdNoise">
+                <feFuncR type="discrete" tableValues="0.1 0.1 0.1 0.1 0.1 0.1" />
+                <feFuncG type="discrete" tableValues="0.1 0.1 0.1 0.1 0.1 0.1" />
+                <feFuncB type="discrete" tableValues="0.1 0.1 0.1 0.1 0.1 0.1" />
+            </feComponentTransfer>
+            <feDisplacementMap id="displacementEffect"
+                                in="SourceGraphic" 
+                                in2="thresholdNoise" 
+                                scale="5" 
+                                xChannelSelector="R" 
+                                yChannelSelector="G" 
+                                result="displaced" />
+            
+            <feComposite id="compositeEffect"
+                        in="SourceGraphic" 
+                        in2="thresholdNoise" 
+                        operator="arithmetic" 
+                        k1="0.1" 
+                        k2="0.1" 
+                        k3="0.1" 
+                        k4="0.0" 
+                        result="composited" />
+            
+            <feBlend id="blendEffect"
+                    in="composited" 
+                    in2="displaced" 
+                    mode="normal" />
+        </filter>
+    </defs>
+    
+    <!-- Main graphics -->
+    
+    <g id="mainGraphics">
+        <rect 
+            width='100%' 
+            height='100%' 
+            fill="url(#brightGradient1)" 
+            filter="url(#customDither)" />
+        
+    </g>
+</svg>

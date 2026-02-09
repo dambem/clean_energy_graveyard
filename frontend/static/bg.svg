@@ -1,0 +1,237 @@
+
+<svg 
+  viewBox="0 0"
+  xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Definition for contour map gradient -->
+  <linearGradient id="contourGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#eef7fa" />
+    <stop offset="20%" stop-color="#d5edf5" />
+    <stop offset="40%" stop-color="#bce2ef" />
+    <stop offset="60%" stop-color="#92cfe4" />
+    <stop offset="80%" stop-color="#68b8d3" />
+    <stop offset="100%" stop-color="#4ca3c2" />
+  </linearGradient>
+
+  <!-- Base noise filter for the primary contour effect -->
+  <filter id="contourFilter">
+    <!-- Generate base noise with low frequency for smooth contours -->
+    <feTurbulence 
+      type="fractalNoise" 
+      baseFrequency="0.0000001" 
+      numOctaves="500" 
+      seed="15"
+      stitchTiles="stitch"
+      result="baseNoise" />
+    
+    <!-- Add more organic movement to the noise -->
+    <feTurbulence
+      type="turbulence"
+      baseFrequency="0.0001"
+      numOctaves=""
+      seed="5"
+      result="warpNoise"/>
+      
+    <!-- Warp the base noise for more natural contours -->
+    <feDisplacementMap
+      in="baseNoise"
+      in2="warpNoise"
+      scale="100"
+      xChannelSelector="R"
+      yChannelSelector="G"
+      result="warpedNoise"/>
+      
+    <!-- Create distinct elevation bands with stepped quantization -->
+    <feComponentTransfer in="warpedNoise" result="quantized">
+      <feFuncR type="discrete" tableValues="0 0.5 0.9 0.3 0.4 0.5 0.0 0.7 0.8 0.9 1" />
+      <feFuncG type="discrete" tableValues="0 0.5 0.2 0.3 0.4 0.5 0.0 0.7 0.8 0.9 1" />
+      <feFuncB type="discrete" tableValues="0 0.5 0.2 0.3 0.4 0.5 0.0 0.7 0.8 0.9 1" />
+    </feComponentTransfer>
+  </filter>
+  
+  <!-- Filter for generating the contour lines -->
+  <filter id="contourLines">
+    <!-- Generate base noise (exactly the same as for the contourFilter) -->
+    <feTurbulence 
+      type="fractalNoise" 
+      baseFrequency="0.004" 
+      numOctaves="5" 
+      seed="15"
+      stitchTiles="stitch"
+      result="baseNoise" />
+    
+    <!-- Add same organic movement to the noise -->
+    <feTurbulence
+      type="turbulence"
+      baseFrequency="0.002"
+      numOctaves="2"
+      seed="5"
+      result="warpNoise"/>
+      
+    <!-- Warp the base noise for more natural contours -->
+    <feDisplacementMap
+      in="baseNoise"
+      in2="warpNoise"
+      scale="100"
+      xChannelSelector="R"
+      yChannelSelector="G"
+      result="warpedNoise"/>
+    
+    <!-- Create stair steps for contour lines -->
+    <feComponentTransfer in="warpedNoise" result="steps">
+      <feFuncR type="discrete" tableValues="0 0.14 0.28 0.42 0.56 0.7 0.84 1" />
+      <feFuncG type="discrete" tableValues="0 0.14 0.28 0.42 0.56 0.7 0.84 1" />
+      <feFuncB type="discrete" tableValues="0 0.14 0.28 0.42 0.56 0.7 0.84 1" />
+    </feComponentTransfer>
+    
+    <!-- Find edges using convolution matrices (Sobel operators) -->
+    <feConvolveMatrix 
+      order="3" 
+      kernelMatrix="1 2 1 
+                    0 0 0 
+                    -1 -2 -1"
+      edgeMode="duplicate"
+      result="edgeH" />
+      
+    <feConvolveMatrix 
+      order="3" 
+      kernelMatrix="1 0 -1 
+                    2 0 -2 
+                    1 0 -1"
+      edgeMode="duplicate"
+      in="steps"
+      result="edgeV" />
+      
+    <!-- Combine horizontal and vertical edges -->
+    <feComposite
+      in="edgeH"
+      in2="edgeV"
+      operator="arithmetic"
+      k1="0" k2="1" k3="1" k4="0"
+      result="edges" />
+      
+    <!-- Threshold to create clean lines -->
+    <feComponentTransfer in="edges" result="thresholdLines">
+      <feFuncR type="linear" slope="8" intercept="-1.5" />
+      <feFuncG type="linear" slope="8" intercept="-1.5" />
+      <feFuncB type="linear" slope="8" intercept="-1.5" />
+    </feComponentTransfer>
+      
+    <!-- Make lines cleaner -->
+    <feColorMatrix
+      type="matrix"
+      values="0 0 0 0 0
+              0 0 0 0 0
+              0 0 0 0 0
+              1 1 1 0 0"
+      result="blackLines" />
+  </filter>
+  
+  <!-- Subtle texture filter -->
+  <filter id="paperTexture">
+    <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="3" seed="10" stitchTiles="stitch" />
+    <feColorMatrix type="matrix" values="0 0 0 0 0, 0 0 0 0 0, 0 0 0 0 0, 0 0 0 0.03 0" />
+  </filter>
+  
+  <!-- Index contour lines filter (thicker lines at intervals) -->
+  <filter id="indexContours">
+    <!-- Generate base noise (exactly the same as for the contourFilter) -->
+    <feTurbulence 
+      type="fractalNoise" 
+      baseFrequency="0.004" 
+      numOctaves="5" 
+      seed="15"
+      stitchTiles="stitch"
+      result="baseNoise" />
+    
+    <!-- Add same organic movement to the noise -->
+    <feTurbulence
+      type="turbulence"
+      baseFrequency="0.002"
+      numOctaves="2"
+      seed="5"
+      result="warpNoise"/>
+      
+    <!-- Warp the base noise for more natural contours -->
+    <feDisplacementMap
+      in="baseNoise"
+      in2="warpNoise"
+      scale="100"
+      xChannelSelector="R"
+      yChannelSelector="G"
+      result="warpedNoise"/>
+    
+    <!-- Create fewer step intervals for index contours -->
+    <feComponentTransfer in="warpedNoise" result="indexSteps">
+      <feFuncR type="discrete" tableValues="0 0.33 0.66 1" />
+      <feFuncG type="discrete" tableValues="0 0.33 0.66 1" />
+      <feFuncB type="discrete" tableValues="0 0.33 0.66 1" />
+    </feComponentTransfer>
+    
+    <!-- Find edges using convolution matrices (Sobel operators) -->
+    <feConvolveMatrix 
+      order="3" 
+      kernelMatrix="1 2 1 
+                    0 0 0 
+                    -1 -2 -1"
+      edgeMode="duplicate"
+      in="indexSteps"
+      result="indexEdgeH" />
+      
+    <feConvolveMatrix 
+      order="3" 
+      kernelMatrix="1 0 -1 
+                    2 0 -5
+                    1 0 -1"
+      edgeMode="duplicate"
+      in="indexSteps"
+      result="indexEdgeV" />
+      
+    <!-- Combine horizontal and vertical edges -->
+    <feComposite
+      in="indexEdgeH"
+      in2="indexEdgeV"
+      operator="arithmetic"
+      k1="0" k2="1" k3="1" k4="0"
+      result="indexEdges" />
+      
+    <!-- Threshold to create clean lines -->
+    <feComponentTransfer in="indexEdges" result="indexThresholdLines">
+      <feFuncR type="linear" slope="8" intercept="0.5" />
+      <feFuncG type="linear" slope="8" intercept="-1.5" />
+      <feFuncB type="linear" slope="8" intercept="-1.5" />
+    </feComponentTransfer>
+    
+    <!-- Make lines thicker -->
+    <feMorphology
+      operator="dilate"
+      radius="0.7"
+      in="indexThresholdLines"
+      result="thickerLines" />
+      
+    <!-- Make lines cleaner -->
+    <feColorMatrix
+      type="matrix"
+      values="0 0 0 0 0
+              0 0 0 0 0
+              0 0 0 0 0
+              1 1 1 0 0"
+      result="blackIndexLines" />
+  </filter>
+  
+  <!-- Background with paper texture -->
+  <rect
+    width="100%" 
+    height="100%"
+    fill="#f8f9fa"
+    filter="url(#paperTexture)" />
+  
+  <!-- Base contour map with color gradient -->
+  <rect
+    width="100%" 
+    height="100%"
+    fill="url(#contourGradient)"
+    filter="url(#contourFilter)" />
+    
+
+</svg>

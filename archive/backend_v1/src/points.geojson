@@ -1,0 +1,54 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -3.795635510721393,
+          53.07416328342203
+        ]
+      },
+      "properties": {
+        "Old Ref ID": "C2077",
+        "Ref ID": 436,
+        "Record Last Updated (dd/mm/yyyy)": 
+        "Record Last Updated (dd/mm/yyyy)": "2015-05-29 00:00:00",
+        "Operator (or Applicant)": "RWE",
+        "Site Name": "Conwy Falls",
+        "Technology Type": "Large Hydro",
+        "Storage Type": 0,
+        "Storage Co-location REPD Ref ID": 0,
+        "Installed Capacity (MWelec)": 5.0,
+        "Share Community Scheme": 0,
+        "CHP Enabled": 0,
+        "CfD Allocation Round": 0,
+        "RO Banding (ROC/MWh)": 0,
+        "FiT Tariff (p/kWh)": 0,
+        "CfD Capacity (MW)": 0,
+        "Turbine Capacity": 0,
+        "No. of Turbines": 0,
+        "Height of Turbines (m)": 0,
+        "Mounting Type for Solar": 0,
+        "Development Status": "Planning Permission Refused",
+        "Development Status (short)": "Application Refused",
+        "Are they re-applying (New REPD Ref)": 0,
+        "Are they re-applying (Old REPD Ref) ": 0,
+        "Address": "Betws-y-Coed",
+        "County": "Gwynedd",
+        "Region": "Wales",
+        "Country": "Wales",
+        "Post Code": 0,
+        "X-coordinate": "279800",
+        "Y-coordinate": "354500",
+        "Planning Authority": "Conwy",
+        "Planning Application Reference": "NP4/26/323",
+        "Appeal Reference": 0,
+        "Secretary of State Reference": 0,
+        "Type of Secretary of State Intervention": 0,
+        "Judicial Review": 0,
+        "Offshore Wind Round": 0,
+        "Planning Application Submitted": "2015-04-23 00:00:00",
+        "Planning Application Withdrawn": 0,
+        "Planning Permission Refused": 
