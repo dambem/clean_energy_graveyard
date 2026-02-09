@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="128" height="128" viewBox="0 0 128 128"
+     role="img" aria-label="Map marker with label">
+  <defs>
+    <!-- gradient fill -->
+    <linearGradient id="markerGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#86F0FF"/>
+      <stop offset="55%" stop-color="#39C0A6"/>
+      <stop offset="100%" stop-color="#1EAA5F"/>
+    </linearGradient>
+
+    <!-- soft shadow -->
+    <filter id="markerShadow" x="-30%" y="-10%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="b"/>
+      <feOffset in="b" dx="0" dy="4" result="o"/>
+      <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- marker shape -->
+  <g filter="url(#markerShadow)">
+    <path d="M64 8
+             C46 8 32 22 32 40
+             C32 62 64 110 64 110
+             C64 110 96 62 96 40
+             C96 22 82 8 64 8 Z"
+          fill="url(#markerGrad)"/>
+  </g>
+
+  <!-- subtle white outline -->
+  <path d="M64 8
+           C46 8 32 22 32 40
+           C32 62 64 110 64 110
+           C64 110 96 62 96 40
+           C96 22 82 8 64 8 Z"
+        fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"
+        vector-effect="non-scaling-stroke"/>
+
+  <!-- white circle in center -->
+  <circle cx="64" cy="44" r="22" fill="white"/>
+
+  <!-- placeholder letter -->
+  <text x="64" y="52"
+        font-family="sans-serif"
+        font-size="22"
+        font-weight="600"
+        text-anchor="middle"
+        fill="#1EAA5F">A</text>
+</svg>

@@ -1,0 +1,262 @@
+[
+  {
+    "year": 2015,
+    "avgDelay": 385.4,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 3
+      },
+      {
+        "range": "90-180 days",
+        "count": 56
+      },
+      {
+        "range": "180-365 days",
+        "count": 38
+      },
+      {
+        "range": "1 Year - 2 Years",
+        "count": 58
+      },
+      {
+        "range": "Over 2 Years",
+        "count": 26
+      }
+    ]
+  },
+  {
+    "year": 2016,
+    "avgDelay": 483.1,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 0
+      },
+      {
+        "range": "90-180 days",
+        "count": 4
+      },
+      {
+        "range": "180-365 days",
+        "count": 8
+      },
+      {
+        "range": "1 Year - 2 Years",
+        "count": 7
+      },
+      {
+        "range": "Over 2 Years",
+        "count": 5
+      }
+    ]
+  },
+  {
+    "year": 2017,
+    "avgDelay": 455.8,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 0
+      },
+      {
+        "range": "90-180 days",
+        "count": 1
+      },
+      {
+        "range": "180-365 days",
+        "count": 9
+      },
+      {
+        "range": "1 Year - 2 Years",
+        "count": 7
+      },
+      {
+        "range": "Over 2 Years",
+        "count": 7
+      }
+    ]
+  },
+  {
+    "year": 2018,
+    "avgDelay": 329.2,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 0
+      },
+      {
+        "range": "90-180 days",
+        "count": 6
+      },
+      {
+        "range": "180-365 days",
+        "count": 7
+      },
+      {
+        "range": "1 Year - 2 Years",
+        "count": 4
+      },
+      {
+        "range": "Over 2 Years",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "year": 2019,
+    "avgDelay": 507.1,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 0
+      },
+      {
+        "range": "90-180 days",
+        "count": 4
+      },
+      {
+        "range": "180-365 days",
+        "count": 13
+      },
+      {
+        "range": "1 Year - 2 Years",
+        "count": 7
+      },
+      {
+        "range": "Over 2 Years",
+        "count": 9
+      }
+    ]
+  },
+  {
+    "year": 2020,
+    "avgDelay": 503.5,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 0
+      },
+      {
+        "range": "90-180 days",
+        "count": 2
+      },
+      {
+        "range": "180-365 days",
+        "count": 5
+      },
+      {
+        "range": "1 Year - 2 Years",
+        "count": 7
+      },
+      {
+        "range": "Over 2 Years",
+        "count": 3
+      }
+    ]
+  },
+  {
+    "year": 2021,
+    "avgDelay": 308.8,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 2
+      },
+      {
+        "range": "90-180 days",
+        "count": 8
+      },
+      {
+        "range": "180-365 days",
+        "count": 10
+      },
+      {
+        "range": "1 Year - 2 Years",
+        "count": 19
+      },
+      {
+        "range": "Over 2 Years",
+        "count": 4
+      }
+    ]
+  },
+  {
+    "year": 2022,
+    "avgDelay": 302.5,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 5
+      },
+      {
+        "range": "90-180 days",
+        "count": 19
+      },
+      {
+        "range": "180-365 days",
+        "count": 12
+      },
+      {
+        "range": "1 Year - 2 Years",
+        "count": 24
+      },
+      {
+        "range": "Over 2 Years",
+        "count": 6
+      }
+    ]
+  },
+  {
+    "year": 2023,
+    "avgDelay": 228.9,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 3
+      },
+      {
+        "range": "90-180 days",
+        "count": 23
+      },
+      {
+        "range": "180-365 days",
+        "count": 42
+      },
+      {
+        "range": "1 Year - 2 Years",
+        "count": 34
+      },
+      {
+        "range": "Over 2 Years",
+        "count": 0
+      }
+    ]
+  },
+  {
+    "year": 2024,
+    "avgDelay": 87.4,
+    "distribution": [
+      {
+        "range": "0-90 days",
+        "count": 4
+      },
+      {
+        "range": "90-180 days",
+        "count": 28
+      },
+      {
+        "range": "180-365 days",
+        "count": 8
+      },
+      {
+        "range": "1 Year - 2 Years",
+        "count": 0
+      },
+      {
+        "range": "Over 2 Years",
+        "count": 0
+      }
+    ]
+  }
+]
